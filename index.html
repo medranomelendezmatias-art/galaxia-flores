@@ -178,7 +178,6 @@ body {
         0 0 35px #fff000, 
         0 0 75px #ffd000, 
         0 0 130px #ffaa00;
-    transform-style: preserve-3d;
 }
 
 /* ANILLO LUMINOSO Y SEMITRANSPARENTE ESTILO SATURNO */
@@ -200,7 +199,6 @@ body {
     box-shadow: 
         0 0 20px rgba(255, 230, 0, 0.6),
         inset 0 0 15px rgba(255, 215, 0, 0.5);
-    transform: rotateX(75deg) rotateY(-15deg);
     pointer-events: none;
 }
 
@@ -512,7 +510,7 @@ const listaUnica = [
     { frase: "Tu voz me alegra", titulo: "🎶 Dulce melodía", texto: "Saber de ti siempre cambia cualquier día pesado por uno lleno de calma." },
     { frase: "Un sueño amarillo", titulo: "🌙 Sueños dorados", texto: "Que todos tus anhelos se cumplan y brilles con más fuerza que nunca." },
     { frase: "Energía bonita", titulo: "⚡ Buena vibra", texto: "Tienes una energía tan linda que dan ganas de abrazarte muy fuerte." },
-    { frase: "Siempre especial", titulo: "🥇 Para ti", texto: "Nunca dudes de lo importante y valiosa que eres para las personas que te quieren." },
+    { frase: "Siempre especial", titulo: "🥇 Para ti", texto: "Nunca doubts de lo importante y valiosa que eres para las personas que te quieren." },
     { frase: "Luz que guía", titulo: "🌌 Estrellita linda", texto: "Eres como esa pequeña estrella que guía cuando la noche parece oscura." },
     { frase: "Detalle con alma", titulo: "💌 Con mucho afecto", texto: "Hecho con dedicación para sacarte la sonrisa más linda de todas." }
 ];
@@ -589,27 +587,30 @@ document.addEventListener("touchmove", function(e){
         mouseX = (e.touches[0].clientX / window.innerWidth - .5);
         mouseY = (e.touches[0].clientY / window.innerHeight - .5);
     }
-});
+}, { passive: true });
 
 function animar() {
     rotacionY += 0.003 + mouseX * 0.01;
     rotacionX += mouseY * 0.01;
 
-    planetaContenedor.style.transform = `rotateX(${rotacionX}rad) rotateY(${rotacionY}rad)`;
+    // Planeta central mirando a la cámara siempre
+    planetaContenedor.style.transform = `translate3d(0px, 0px, 0px)`;
+
+    const cosX = Math.cos(rotacionX);
+    const sinX = Math.sin(rotacionX);
+    const cosY = Math.cos(rotacionY);
+    const sinY = Math.sin(rotacionY);
 
     elementos3D.forEach(obj => {
-        const cosX = Math.cos(rotacionX);
-        const sinX = Math.sin(rotacionX);
-        const cosY = Math.cos(rotacionY);
-        const sinY = Math.sin(rotacionY);
-
+        // Cálculo de posición orbital 3D
         let x1 = obj.x * cosY + obj.z * sinY;
         let z1 = -obj.x * sinY + obj.z * cosY;
 
         let y2 = obj.y * cosX - z1 * sinX;
         let z2 = obj.y * sinX + z1 * cosX;
 
-        obj.elemento.style.transform = `translate3d(${x1}px, ${y2}px, ${z2}px) rotateY(${-rotacionY}rad) rotateX(${-rotacionX}rad)`;
+        // Se desplaza en el espacio 3D sin inclinarse, manteniéndose siempre mirando a la pantalla
+        obj.elemento.style.transform = `translate3d(${x1}px, ${y2}px, ${z2}px)`;
     });
 
     requestAnimationFrame(animar);
