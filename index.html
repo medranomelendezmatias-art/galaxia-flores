@@ -333,13 +333,11 @@ body {
 
 <body>
 
-<!-- AUDIO CORREGIDO PARA FUNCIONAR EN CUALQUIER DISPOSITIVO -->
 <audio id="musicaFondo" loop preload="auto">
     <source src="musica.mp3" type="audio/mpeg">
     Tu navegador no soporta el elemento de audio.
 </audio>
 
-<!-- PANTALLA DE BIENVENIDA -->
 <div class="pantalla-bienvenida" id="pantallaBienvenida">
     <div class="tarjeta-bienvenida">
         <h1>✨ ¡Bienvenida, Fernanda! ✨</h1>
@@ -351,16 +349,13 @@ body {
 </div>
 
 <div class="espacio">
-    <!-- ESTRELLAS -->
     <div class="estrellas" id="estrellas"></div>
 
-    <!-- TÍTULO -->
     <div class="titulo">
         <h1>🌻 Feliz Día de las Flores Amarillas 🌻</h1>
         <p>Un pequeño universo lleno de luz para alguien especial</p>
     </div>
 
-    <!-- GALAXIA -->
     <div class="escena">
         <div class="galaxia" id="galaxia">
             <div class="planeta-contenedor" id="planetaContenedor">
@@ -370,14 +365,12 @@ body {
         </div>
     </div>
 
-    <!-- INSTRUCCIÓN -->
     <div class="instruccion">
         🖱️ Desliza para girar la galaxia
         <br>
         🌻 Haz clic en una flor para leer un mensaje
     </div>
 
-    <!-- VENTANA DEL MENSAJE -->
     <div class="mensaje" id="mensaje">
         <h2 id="tituloMensaje">🌻 Para ti 🌻</h2>
         <p id="textoMensaje">
@@ -388,7 +381,6 @@ body {
 </div>
 
 <script>
-/* SISTEMA DE EFECTOS DE SONIDO (WEB AUDIO API) */
 let audioCtx;
 
 function iniciarAudio() {
@@ -442,7 +434,6 @@ function reproducirSonidoCerrar() {
     osc.stop(now + 0.2);
 }
 
-/* CONTROL DE PANTALLA DE BIENVENIDA Y MÚSICA */
 document.getElementById("btnEntrar").addEventListener("click", function(){
     iniciarAudio();
     reproducirSonidoMagico();
@@ -455,7 +446,11 @@ document.getElementById("btnEntrar").addEventListener("click", function(){
     document.getElementById("pantallaBienvenida").classList.add("oculta");
 });
 
-/* CREAR ESTRELLAS */
+document.getElementById("cerrar").addEventListener("click", function(){
+    reproducirSonidoCerrar();
+    document.getElementById("mensaje").classList.remove("activo");
+});
+
 const estrellas = document.getElementById("estrellas");
 for(let i = 0; i < 450; i++){
     const estrella = document.createElement("div");
@@ -467,18 +462,18 @@ for(let i = 0; i < 450; i++){
     estrellas.appendChild(estrella);
 }
 
-/* RUTAS DE IMÁGENES RELATIVAS (CORREGIDAS) */
+/* LISTA DE TUS IMÁGENES SUBIDAS */
 const misImagenes = [
     "flor1.png",
-    "flor2.jpg",
-    "flor3.jpg",
-    "flor4.jpg",
-    "flor5.jpg",
-    "flor6.jpg",
-    "flor7.jpg"
+    "flor2.png",
+    "flor3.png",
+    "flor4.png",
+    "flor5.png",
+    "flor6.png",
+    "flor7.png",
+    "flor8.png"
 ];
 
-/* LISTA DE MENSAJES */
 const listaUnica = [
     { frase: "Eres pura alegría", titulo: "🥰 Un rayito de sol", texto: "Tu presencia alegra hasta el día más gris. Gracias por ser así de especial." },
     { frase: "Luz en mi vida", titulo: "✨ Gracias por brillar", texto: "Tienes esa magia única que ilumina la vida de todos los que te rodean." },
@@ -594,40 +589,33 @@ document.addEventListener("touchmove", function(e){
         mouseX = (e.touches[0].clientX / window.innerWidth - .5);
         mouseY = (e.touches[0].clientY / window.innerHeight - .5);
     }
-}, { passive: true });
+});
 
-function animar(){
-    rotacionY += mouseX * 1.5;
-    rotacionX -= mouseY * 0.8;
+function animar() {
+    rotacionY += 0.003 + mouseX * 0.01;
+    rotacionX += mouseY * 0.01;
 
-    galaxia.style.transform = `rotateX(${rotacionX}deg) rotateY(${rotacionY}deg)`;
-    planetaContenedor.style.transform = `rotateY(${-rotacionY}deg) rotateX(${-rotacionX}deg)`;
+    planetaContenedor.style.transform = `rotateX(${rotacionX}rad) rotateY(${rotacionY}rad)`;
 
-    elementos3D.forEach(item => {
-        item.elemento.style.transform = `
-            translate3d(${item.x}px, ${item.y}px, ${item.z}px)
-            rotateY(${-rotacionY}deg)
-            rotateX(${-rotacionX}deg)
-        `;
+    elementos3D.forEach(obj => {
+        const cosX = Math.cos(rotacionX);
+        const sinX = Math.sin(rotacionX);
+        const cosY = Math.cos(rotacionY);
+        const sinY = Math.sin(rotacionY);
+
+        let x1 = obj.x * cosY + obj.z * sinY;
+        let z1 = -obj.x * sinY + obj.z * cosY;
+
+        let y2 = obj.y * cosX - z1 * sinX;
+        let z2 = obj.y * sinX + z1 * cosX;
+
+        obj.elemento.style.transform = `translate3d(${x1}px, ${y2}px, ${z2}px) rotateY(${-rotacionY}rad) rotateX(${-rotacionX}rad)`;
     });
 
     requestAnimationFrame(animar);
 }
 
 animar();
-
-document.getElementById("cerrar").addEventListener("click", function(){
-    reproducirSonidoCerrar();
-    document.getElementById("mensaje").classList.remove("activo");
-});
-
-document.addEventListener("click", function(e){
-    const mensaje = document.getElementById("mensaje");
-    if(e.target === mensaje){
-        reproducirSonidoCerrar();
-        mensaje.classList.remove("activo");
-    }
-});
 </script>
 
 </body>
