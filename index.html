@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxia de Flores Amarillas 3D</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* PANTALLA DE PRESENTACIÓN / BIENVENIDA */
+.pantalla-bienvenida {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(30, 25, 0, 0.95), #000 80%);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.pantalla-bienvenida.oculta {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.tarjeta-bienvenida {
+    background: rgba(15, 15, 15, 0.85);
+    border: 2px solid #ffe600;
+    border-radius: 25px;
+    padding: 40px 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(255, 230, 0, 0.3), inset 0 0 15px rgba(255, 230, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.tarjeta-bienvenida h1 {
+    color: #fff36b;
+    font-size: 32px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 12px #fff000;
+}
+
+.tarjeta-bienvenida p {
+    color: #f0f0f0;
+    font-size: 17px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.btn-entrar {
+    background: linear-gradient(135deg, #ffe600, #ffaa00);
+    color: #000;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 20px #ffd000;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-entrar:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 35px #ffee00;
+}
+
+/* ESPACIO */
+.espacio {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 210, 0, 0.15), transparent 30%), #000;
+    overflow: hidden;
+}
+
+.estrellas {
+    position: absolute;
+    inset: 0;
+}
+
+.estrella {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 5px white;
+    animation: parpadear 2s infinite alternate;
+}
+
+@keyframes parpadear {
+    from { opacity: .2; }
+    to { opacity: 1; }
+}
+
+/* TÍTULO GALAXIA */
+.titulo {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.titulo h1 {
+    color: #fff6a0;
+    font-size: 34px;
+    text-shadow: 0 0 10px #fff000, 0 0 25px #ffd000;
+}
+
+.titulo p {
+    margin-top: 6px;
+    color: #fff;
+    font-size: 14px;
+}
+
+/* GALAXIA AMPLIADA */
+.escena {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.galaxia {
+    position: relative;
+    width: 1300px;
+    height: 1300px;
+    transform-style: preserve-3d;
+}
+
+/* CONTENEDOR DEL PLANETA CENTRAL */
+.planeta-contenedor {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* ESFERA NEGRA SEMITRANSPARENTE */
+.centro-3d {
+    position: absolute;
+    left: -110px;
+    top: -110px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(50, 50, 50, 0.5) 0%, rgba(15, 15, 15, 0.8) 60%, rgba(0, 0, 0, 0.98) 100%);
+    border: 2px solid rgba(255, 235, 0, 0.85);
+    box-shadow: 
+        inset 0 0 25px #fff700,
+        0 0 35px #fff000, 
+        0 0 75px #ffd000, 
+        0 0 130px #ffaa00;
+    transform-style: preserve-3d;
+}
+
+/* ANILLO LUMINOSO Y SEMITRANSPARENTE ESTILO SATURNO */
+.anillo-planeta {
+    position: absolute;
+    left: -220px;
+    top: -220px;
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        transparent 48%, 
+        rgba(255, 255, 255, 0.8) 52%, 
+        rgba(255, 220, 0, 0.6) 60%, 
+        rgba(255, 180, 0, 0.3) 68%, 
+        transparent 72%
+    );
+    border: 1px solid rgba(255, 240, 120, 0.5);
+    box-shadow: 
+        0 0 20px rgba(255, 230, 0, 0.6),
+        inset 0 0 15px rgba(255, 215, 0, 0.5);
+    transform: rotateX(75deg) rotateY(-15deg);
+    pointer-events: none;
+}
+
+/* ELEM3D: FLORES Y LETRAS CON EFECTO BILLBOARD */
+.elem-3d {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* BOTÓN DE LAS FLORES CON FOTO */
+.flor {
+    width: 75px;
+    height: 75px;
+    margin-left: -37.5px;
+    margin-top: -37.5px;
+    border: none;
+    background-color: transparent;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: filter .2s, transform .2s;
+    filter: drop-shadow(0 0 8px #ffd000) drop-shadow(0 0 15px #ffdf00);
+}
+
+.flor:hover {
+    filter: brightness(1.5) drop-shadow(0 0 25px #ffee00);
+    transform: scale(1.3);
+}
+
+/* TEXTOS FLOTANTES EN LA GALAXIA CON FONDO PROTECTOR Y RESALTADO */
+.texto-flotante {
+    color: #fff6a0;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    text-shadow: 0 0 8px #fff000, 0 0 18px #ffd000;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.65);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 230, 0, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+/* VENTANA DE MENSAJE POPUP */
+.mensaje {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(.7);
+    width: min(430px, 85%);
+    padding: 35px 25px;
+    text-align: center;
+    background: rgba(15, 15, 15, .95);
+    border: 2px solid #ffe600;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #ffd000, 0 0 70px rgba(255, 200, 0, .5);
+    opacity: 0;
+    visibility: hidden;
+    transition: .4s;
+    z-index: 1000;
+}
+
+.mensaje.activo {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.mensaje h2 {
+    color: #fff36b;
+    margin-bottom: 20px;
+    font-size: 26px;
+    text-shadow: 0 0 10px yellow;
+}
+
+.mensaje p {
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+.cerrar {
+    margin-top: 25px;
+    padding: 10px 25px;
+    border: 1px solid #ffe600;
+    border-radius: 20px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+}
+
+.cerrar:hover {
+    background: #ffe600;
+    color: black;
+}
+
+.instruccion {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ddd;
+    font-size: 14px;
+    text-align: center;
+    z-index: 200;
+}
+
+@media(max-width:600px) {
+    .galaxia {
+        width: 700px;
+        height: 700px;
+    }
+    .titulo h1 { font-size: 24px; }
+    .flor {
+        width: 55px;
+        height: 55px;
+        margin-left: -27.5px;
+        margin-top: -27.5px;
+    }
+    .texto-flotante { font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO CORREGIDO PARA FUNCIONAR EN CUALQUIER DISPOSITIVO -->
+<audio id="musicaFondo" loop preload="auto">
+    <source src="musica.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+</audio>
+
+<!-- PANTALLA DE BIENVENIDA -->
+<div class="pantalla-bienvenida" id="pantallaBienvenida">
+    <div class="tarjeta-bienvenida">
+        <h1>✨ ¡Bienvenida, Fernanda! ✨</h1>
+        <p>
+            En este día tan especial quise prepararte un pequeño universo pensado solo para ti, lleno de flores, detalles y palabras que expresan lo increíble que eres.
+        </p>
+        <button class="btn-entrar" id="btnEntrar">Entrar al Universo 🌻</button>
+    </div>
+</div>
+
+<div class="espacio">
+    <!-- ESTRELLAS -->
+    <div class="estrellas" id="estrellas"></div>
+
+    <!-- TÍTULO -->
+    <div class="titulo">
+        <h1>🌻 Feliz Día de las Flores Amarillas 🌻</h1>
+        <p>Un pequeño universo lleno de luz para alguien especial</p>
+    </div>
+
+    <!-- GALAXIA -->
+    <div class="escena">
+        <div class="galaxia" id="galaxia">
+            <div class="planeta-contenedor" id="planetaContenedor">
+                <div class="centro-3d"></div>
+                <div class="anillo-planeta"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INSTRUCCIÓN -->
+    <div class="instruccion">
+        🖱️ Desliza para girar la galaxia
+        <br>
+        🌻 Haz clic en una flor para leer un mensaje
+    </div>
+
+    <!-- VENTANA DEL MENSAJE -->
+    <div class="mensaje" id="mensaje">
+        <h2 id="tituloMensaje">🌻 Para ti 🌻</h2>
+        <p id="textoMensaje">
+            Eres una persona llena de luz que ilumina la vida de quienes te rodean. ✨
+        </p>
+        <button class="cerrar" id="cerrar">Cerrar</button>
+    </div>
+</div>
+
+<script>
+/* SISTEMA DE EFECTOS DE SONIDO (WEB AUDIO API) */
+let audioCtx;
+
+function iniciarAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function reproducirSonidoMagico() {
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(523.25, now);
+    osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.3);
+    gain1.gain.setValueAtTime(0.15, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.3);
+
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(659.25, now + 0.1);
+    osc2.frequency.exponentialRampToValueAtTime(1318.51, now + 0.4);
+    gain2.gain.setValueAtTime(0.12, now + 0.1);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.start(now + 0.1);
+    osc2.stop(now + 0.4);
+}
+
+function reproducirSonidoCerrar() {
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(440, now);
+    osc.frequency.exponentialRampToValueAtTime(220, now + 0.2);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+}
+
+/* CONTROL DE PANTALLA DE BIENVENIDA Y MÚSICA */
+document.getElementById("btnEntrar").addEventListener("click", function(){
+    iniciarAudio();
+    reproducirSonidoMagico();
+    
+    const musica = document.getElementById("musicaFondo");
+    musica.play().catch(function(error) {
+        console.log("No se pudo iniciar el audio automático:", error);
+    });
+    
+    document.getElementById("pantallaBienvenida").classList.add("oculta");
+});
+
+/* CREAR ESTRELLAS */
+const estrellas = document.getElementById("estrellas");
+for(let i = 0; i < 450; i++){
+    const estrella = document.createElement("div");
+    estrella.className = "estrella";
+    estrella.style.left = Math.random() * 100 + "%";
+    estrella.style.top = Math.random() * 100 + "%";
+    estrella.style.animationDelay = Math.random() * 3 + "s";
+    estrella.style.opacity = Math.random();
+    estrellas.appendChild(estrella);
+}
+
+/* RUTAS DE IMÁGENES RELATIVAS (CORREGIDAS) */
+const misImagenes = [
+    "flor1.png",
+    "flor2.jpg",
+    "flor3.jpg",
+    "flor4.jpg",
+    "flor5.jpg",
+    "flor6.jpg",
+    "flor7.jpg"
+];
+
+/* LISTA DE MENSAJES */
+const listaUnica = [
+    { frase: "Eres pura alegría", titulo: "🥰 Un rayito de sol", texto: "Tu presencia alegra hasta el día más gris. Gracias por ser así de especial." },
+    { frase: "Luz en mi vida", titulo: "✨ Gracias por brillar", texto: "Tienes esa magia única que ilumina la vida de todos los que te rodean." },
+    { frase: "Alegras mis días", titulo: "🌼 Sonrisa mágica", texto: "Cada momento a tu lado o al pensar en ti se convierte en una bonita memoria." },
+    { frase: "Flores para ti", titulo: "🌻 Detalle con amor", texto: "Te mereces todos los detalles lindos del mundo hoy y siempre." },
+    { frase: "Siempre en mi corazón", titulo: "💛 Un lugar especial", texto: "No importa dónde estés, siempre ocupas un lugar muy bonito en mi mente." },
+    { frase: "Gracias por existir", titulo: "🥺 Eres un regalo", texto: "El mundo es infinitamente más bonito y cálido simplemente porque tú estás en él." },
+    { frase: "Nunca dejes de brillar", titulo: "⭐ Brilla siempre", texto: "Conserva esa dulzura y autenticidad que te hacen una persona inigualable." },
+    { frase: "Eres muy especial", titulo: "💖 Para alguien único", texto: "No hay nadie como tú. Tu forma de ser abraza el corazón de los demás." },
+    { frase: "Un detalle para ti", titulo: "🎁 Con todo mi cariño", texto: "Una flor amarilla para recordarte lo mucho que vales y lo lindo que transmites." },
+    { frase: "Sonríe siempre", titulo: "😊 Tu sonrisa es todo", texto: "Nunca olvides lo hermosa que te ves cuando sonríes sinceramente." },
+    { frase: "Eres mi sol", titulo: "☀️ Calidez infinita", texto: "Como el sol a los girasoles, tu energía le da vida y color a todo." },
+    { frase: "Atesoro tu compañía", titulo: "🤝 Momentos inolvidables", texto: "Cada charla y cada risa contigo guardan un valor incalculable para mí." },
+    { frase: "Contigo todo es mejor", titulo: "💫 Todo es más bonito", texto: "Las cosas sencillas se vuelven extraordinarias cuando comparto tiempo contigo." },
+    { frase: "Tu magia es única", titulo: "🔮 Magia pura", texto: "Tienes esa linda capacidad de hacer sentir bien a quien habla contigo." },
+    { frase: "Un abrazo con luz", titulo: "🤗 Abrazo al alma", texto: "Te envío un abracito apretado lleno de buena vibra y mucho cariño." },
+    { frase: "Eres mi persona favorita", titulo: "⭐ Súper especial", texto: "De todas las personas en el mundo, tú tienes un brillo que nadie más tiene." },
+    { frase: "Qué bonito tenerte", titulo: "🌷 Qué suerte la mía", texto: "Coincidir contigo en esta vida ha sido una de las sorpresas más bonitas." },
+    { frase: "Brillas con luz propia", titulo: "✨ Luz propia", texto: "No necesitas encajar, tu propia luz es suficiente para destacar donde vayas." },
+    { frase: "Gracias por tu dulzura", titulo: "🍯 Dulzura infinita", texto: "Gracias por tu amabilidad y la calidez con la que tratas a los demás." },
+    { frase: "Siempre pensando en ti", titulo: "💭 En mis pensamientos", texto: "Espero que este detalle te saque una sonrisa gigante el día de hoy." },
+    { frase: "Tu alegría contagia", titulo: "🎶 Pura felicidad", texto: "Es imposible no contagiarse de buena vibra cuando estás cerca." },
+    { frase: "Un universo contigo", titulo: "🌌 Un universo lindo", texto: "Contigo las posibilidades de ser feliz son infinitas como este espacio." },
+    { frase: "Hermosa como un girasol", titulo: "🌻 Belleza natural", texto: "Fuerte, brillante y hermosa; así como un girasol buscando siempre la luz." },
+    { frase: "Nunca cambies", titulo: "🤍 Quédate así", texto: "Sigue conservando esa esencia bonita y ese gran corazón que tienes." },
+    { frase: "Para iluminar tu día", titulo: "💡 Ilumina tu día", texto: "Que este día de flores amarillas te traiga momentos inolvidables y mucha paz." },
+    { frase: "Un cielo de flores", titulo: "☁️ Dulce galaxia", texto: "Cada flor de esta pantalla lleva un buen deseo sincero para tu vida." },
+    { frase: "Tu bondad enamora", titulo: "🌟 Corazón de oro", texto: "Tienes un alma noble que llena de tranquilidad a todos los que te rodean." },
+    { frase: "El brillo de tus ojos", titulo: "✨ Mirada con luz", texto: "Que la vida te devuelva multiplicado todo el amor que tú das." },
+    { frase: "Días llenos de luz", titulo: "🌞 Luz constante", texto: "Que nunca falten razones para reír a carcajadas e imaginar cosas bonitas." },
+    { frase: "Un rinconcito de paz", titulo: "🕊️ Tu paz interior", texto: "Espero que al ver este pequeño detalle sientas mucha paz y felicidad." },
+    { frase: "Magia en cada paso", titulo: "🐾 Pasos de luz", texto: "A donde vas dejas una huella hermosa llena de alegría y ternura." },
+    { frase: "Florece siempre", titulo: "🌺 Florecer diario", texto: "Incluso en los días difíciles, nunca olvides tu capacidad de renacer y florecer." },
+    { frase: "Un girasol para ti", titulo: "🌻 Símbolo de amor", texto: "Los girasoles siempre buscan la luz, tal como yo encuentro paz en ti." },
+    { frase: "Momento inolvidable", titulo: "📸 Recuerdos bellos", texto: "Los detalles espontáneos son los que se quedan guardados en el corazón." },
+    { frase: "Tu voz me alegra", titulo: "🎶 Dulce melodía", texto: "Saber de ti siempre cambia cualquier día pesado por uno lleno de calma." },
+    { frase: "Un sueño amarillo", titulo: "🌙 Sueños dorados", texto: "Que todos tus anhelos se cumplan y brilles con más fuerza que nunca." },
+    { frase: "Energía bonita", titulo: "⚡ Buena vibra", texto: "Tienes una energía tan linda que dan ganas de abrazarte muy fuerte." },
+    { frase: "Siempre especial", titulo: "🥇 Para ti", texto: "Nunca dudes de lo importante y valiosa que eres para las personas que te quieren." },
+    { frase: "Luz que guía", titulo: "🌌 Estrellita linda", texto: "Eres como esa pequeña estrella que guía cuando la noche parece oscura." },
+    { frase: "Detalle con alma", titulo: "💌 Con mucho afecto", texto: "Hecho con dedicación para sacarte la sonrisa más linda de todas." }
+];
+
+const galaxia = document.getElementById("galaxia");
+const planetaContenedor = document.getElementById("planetaContenedor");
+const elementos3D = []; 
+
+for(let i = 0; i < listaUnica.length; i++){
+    const itemData = listaUnica[i];
+
+    const contenedorFlor = document.createElement("div");
+    contenedorFlor.className = "elem-3d";
+
+    const flor = document.createElement("button");
+    flor.className = "flor";
+    flor.setAttribute("aria-label", "Abrir mensaje");
+    
+    const imagenAsignada = misImagenes[i % misImagenes.length];
+    flor.style.backgroundImage = `url('${imagenAsignada}')`;
+
+    const phi = Math.acos(-1 + (2 * i) / listaUnica.length);
+    const theta = Math.sqrt(listaUnica.length * Math.PI) * phi;
+    
+    const radioFlor = 380 + (i % 3) * 60; 
+
+    const xF = radioFlor * Math.sin(phi) * Math.cos(theta);
+    const yF = radioFlor * Math.sin(phi) * Math.sin(theta);
+    const zF = radioFlor * Math.cos(phi);
+
+    contenedorFlor.appendChild(flor);
+    galaxia.appendChild(contenedorFlor);
+
+    flor.addEventListener("click", function(){
+        reproducirSonidoMagico();
+        document.getElementById("tituloMensaje").textContent = itemData.titulo;
+        document.getElementById("textoMensaje").textContent = itemData.texto;
+        document.getElementById("mensaje").classList.add("activo");
+    });
+
+    elementos3D.push({ elemento: contenedorFlor, x: xF, y: yF, z: zF });
+
+    const contenedorTexto = document.createElement("div");
+    contenedorTexto.className = "elem-3d";
+
+    const txt = document.createElement("div");
+    txt.className = "texto-flotante";
+    txt.textContent = itemData.frase;
+
+    const radioTexto = radioFlor + 95;
+    const offsetAngulo = 0.15;
+    const xT = radioTexto * Math.sin(phi) * Math.cos(theta + offsetAngulo);
+    const yT = radioTexto * Math.sin(phi) * Math.sin(theta + offsetAngulo) + 15;
+    const zT = radioTexto * Math.cos(phi);
+
+    contenedorTexto.appendChild(txt);
+    galaxia.appendChild(contenedorTexto);
+
+    elementos3D.push({ elemento: contenedorTexto, x: xT, y: yT, z: zT });
+}
+
+let rotacionX = 0;
+let rotacionY = 0;
+let mouseX = 0;
+let mouseY = 0;
+
+document.addEventListener("mousemove", function(e){
+    mouseX = (e.clientX / window.innerWidth - .5);
+    mouseY = (e.clientY / window.innerHeight - .5);
+});
+
+document.addEventListener("touchmove", function(e){
+    if (e.touches.length > 0) {
+        mouseX = (e.touches[0].clientX / window.innerWidth - .5);
+        mouseY = (e.touches[0].clientY / window.innerHeight - .5);
+    }
+}, { passive: true });
+
+function animar(){
+    rotacionY += mouseX * 1.5;
+    rotacionX -= mouseY * 0.8;
+
+    galaxia.style.transform = `rotateX(${rotacionX}deg) rotateY(${rotacionY}deg)`;
+    planetaContenedor.style.transform = `rotateY(${-rotacionY}deg) rotateX(${-rotacionX}deg)`;
+
+    elementos3D.forEach(item => {
+        item.elemento.style.transform = `
+            translate3d(${item.x}px, ${item.y}px, ${item.z}px)
+            rotateY(${-rotacionY}deg)
+            rotateX(${-rotacionX}deg)
+        `;
+    });
+
+    requestAnimationFrame(animar);
+}
+
+animar();
+
+document.getElementById("cerrar").addEventListener("click", function(){
+    reproducirSonidoCerrar();
+    document.getElementById("mensaje").classList.remove("activo");
+});
+
+document.addEventListener("click", function(e){
+    const mensaje = document.getElementById("mensaje");
+    if(e.target === mensaje){
+        reproducirSonidoCerrar();
+        mensaje.classList.remove("activo");
+    }
+});
+</script>
+
+</body>
+</html>
